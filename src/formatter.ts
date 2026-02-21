@@ -4,19 +4,33 @@
 
 import { CategoryNews } from "./services/newsService";
 
+const TITLE_MAX_LENGTH = 20;
+
+/**
+ * 見出しを短縮する
+ * - Google Newsの「タイトル - メディア名」からメディア名を除去
+ * - 20文字以内に切り詰め、超過分は「…」
+ */
+function shortenTitle(title: string): string {
+  // 末尾の「 - メディア名」を除去
+  const cleaned = title.replace(/\s*[-–—|]\s*[^\-–—|]+$/, "").trim();
+  if (cleaned.length <= TITLE_MAX_LENGTH) return cleaned;
+  return cleaned.slice(0, TITLE_MAX_LENGTH) + "…";
+}
+
 /**
  * ニュースデータをLINE送信用テキストに整形
  *
  * 出力例:
- * 【本日の業界ニュース】2026/02/18
+ * 【保険ニュース】2026/02/22
  *
- * ■金融
- * ・記事タイトル
- *   https://example.com/article1
+ * ■生命保険
+ * ・日本生命が新商品を発表…
+ *   https://example.com/1
  *
- * ■自動車
- * ・記事タイトル
- *   https://example.com/article2
+ * ■損害保険
+ * ・東京海上HD、海外事業を…
+ *   https://example.com/2
  */
 export function formatNewsMessage(allNews: CategoryNews[]): string {
   const today = new Date().toLocaleDateString("ja-JP", {
@@ -26,7 +40,7 @@ export function formatNewsMessage(allNews: CategoryNews[]): string {
     day: "2-digit",
   });
 
-  const lines: string[] = [`【本日の業界ニュース】${today}`];
+  const lines: string[] = [`【保険ニュース】${today}`];
 
   for (const category of allNews) {
     lines.push("");
@@ -38,9 +52,7 @@ export function formatNewsMessage(allNews: CategoryNews[]): string {
     }
 
     for (const item of category.items) {
-      // Google Newsの「タイトル - メディア名」はそのまま表示
-      // （出典がわかって便利）
-      lines.push(`・${item.title}`);
+      lines.push(`・${shortenTitle(item.title)}`);
       lines.push(`  ${item.url}`);
     }
   }

@@ -2,6 +2,8 @@
 // 環境変数・設定管理
 // ============================================
 
+import 'dotenv/config';
+
 function requireEnv(key: string): string {
   const value = process.env[key];
   if (!value) {
@@ -9,6 +11,7 @@ function requireEnv(key: string): string {
   }
   return value;
 }
+
 
 export const config = {
   line: {

@@ -1,5 +1,5 @@
 // ============================================
-// RSSフィード定義
+// RSSフィード定義（保険業界特化）
 // ============================================
 
 export interface FeedSource {
@@ -21,36 +21,36 @@ function googleNewsRSS(query: string): string {
 
 export const categories: CategoryFeeds[] = [
   {
-    label: "金融",
+    label: "生命保険",
     feeds: [
       {
-        name: "Google News - 銀行・証券",
-        url: googleNewsRSS("銀行 OR 証券 OR 金融"),
+        name: "Google News - 国内生保",
+        url: googleNewsRSS(
+          "生命保険 OR 日本生命 OR 第一生命 OR 明治安田生命 OR 住友生命"
+        ),
       },
       {
-        name: "Google News - 生命保険・損害保険",
-        url: googleNewsRSS("生命保険 OR 損害保険 OR 保険会社"),
-      },
-      {
-        name: "NHK - ビジネス",
-        url: "https://www.nhk.or.jp/rss/news/cat5.xml",
+        name: "Google News - 海外生保",
+        url: googleNewsRSS(
+          "海外 生命保険 OR メットライフ OR プルデンシャル OR アフラック OR 生保 海外展開"
+        ),
       },
     ],
   },
   {
-    label: "自動車",
+    label: "損害保険",
     feeds: [
       {
-        name: "Google News - 自動車メーカー",
-        url: googleNewsRSS("自動車メーカー OR トヨタ OR ホンダ OR 日産 OR EV"),
+        name: "Google News - 国内損保",
+        url: googleNewsRSS(
+          "損害保険 OR 東京海上 OR 損保ジャパン OR 三井住友海上 OR あいおいニッセイ"
+        ),
       },
       {
-        name: "Google News - 自動車販売・整備",
-        url: googleNewsRSS("自動車ディーラー OR カーディーラー OR 自動車整備"),
-      },
-      {
-        name: "Response.jp",
-        url: "https://response.jp/rss/index.rdf",
+        name: "Google News - 海外損保・再保険",
+        url: googleNewsRSS(
+          "海外 損害保険 OR 再保険 OR ロイズ OR AIG OR アリアンツ OR 損保 海外"
+        ),
       },
     ],
   },
