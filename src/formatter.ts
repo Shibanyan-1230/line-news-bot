@@ -4,7 +4,7 @@
 
 import { CategoryNews } from "./services/newsService";
 
-const TITLE_MAX_LENGTH = 20;
+const TITLE_MAX_LENGTH = 30;
 
 /**
  * 見出しを短縮する
