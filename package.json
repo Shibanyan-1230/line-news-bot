@@ -1,0 +1,26 @@
+{
+  "name": "line-news-bot",
+  "version": "1.0.0",
+  "description": "毎朝8時に金融・自動車業界ニュースをLINEに通知するBOT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:once": "node dist/run.js",
+    "dev": "npx ts-node src/run.ts",
+    "dev:cron": "npx ts-node src/index.ts"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/node-cron": "^3.0.11",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

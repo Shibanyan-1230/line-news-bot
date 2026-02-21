@@ -1,0 +1,18 @@
+# Render.com用設定ファイル
+# Background Worker として常時起動し、内部cronでスケジュール実行
+services:
+  - type: worker
+    name: line-news-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node dist/index.js
+    envVars:
+      - key: TZ
+        value: Asia/Tokyo
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: LINE_USER_ID
+        sync: false
+      - key: CRON_SCHEDULE
+        value: "0 8 * * *"
