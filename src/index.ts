@@ -1,13 +1,17 @@
 // ============================================
-// メインエントリ（内部cronスケジューラ）
+// メインエントリ（内部cronスケジューラ + ヘルスチェック）
 // ============================================
 
+import express from "express";
 import cron from "node-cron";
 import { config } from "./config";
 import { fetchAllNews } from "./services/newsService";
 import { sendLineMessage } from "./services/lineService";
 import { formatNewsMessage } from "./formatter";
 
+// --------------------------------------------------
+// ニュース取得・送信ジョブ
+// --------------------------------------------------
 async function executeJob(): Promise<void> {
   const startTime = Date.now();
   console.log(`[INFO] ジョブ開始: ${new Date().toISOString()}`);
@@ -30,17 +34,42 @@ async function executeJob(): Promise<void> {
   }
 }
 
+// --------------------------------------------------
 // Cronスケジュール登録
+// --------------------------------------------------
 const schedule = config.cronSchedule;
-console.log(`[INFO] LINE News Bot 起動`);
-console.log(`[INFO] Cronスケジュール: ${schedule}`);
-console.log(`[INFO] タイムゾーン: ${process.env.TZ || "system default"}`);
 
 cron.schedule(schedule, executeJob, {
   timezone: "Asia/Tokyo",
 });
 
-console.log("[INFO] 次回実行を待機中...");
+// --------------------------------------------------
+// HTTPサーバー（Railway/Render用ヘルスチェック）
+// ポートをリッスンしないとプラットフォームがプロセスを
+// 不安定とみなして再起動し、cronが発火しないことがある
+// --------------------------------------------------
+const app = express();
+const PORT = parseInt(process.env.PORT || "3000", 10);
 
-// 起動直後にも1回テスト実行したい場合は以下のコメントを外す
-// executeJob();
+app.get("/", (_req, res) => {
+  res.json({
+    status: "running",
+    schedule,
+    timezone: "Asia/Tokyo",
+    uptime: `${Math.floor(process.uptime())}s`,
+  });
+});
+
+// 手動トリガー用エンドポイント（ブラウザからアクセスで即実行）
+app.get("/trigger", async (_req, res) => {
+  res.json({ message: "ジョブを実行中..." });
+  await executeJob();
+});
+
+app.listen(PORT, () => {
+  console.log(`[INFO] LINE News Bot 起動`);
+  console.log(`[INFO] Cronスケジュール: ${schedule} (Asia/Tokyo)`);
+  console.log(`[INFO] ヘルスチェック: http://localhost:${PORT}/`);
+  console.log(`[INFO] 手動実行: http://localhost:${PORT}/trigger`);
+  console.log("[INFO] 次回実行を待機中...");
+});
