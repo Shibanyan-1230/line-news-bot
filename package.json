@@ -11,6 +11,7 @@
     "dev:cron": "npx ts-node src/index.ts"
   },
   "dependencies": {
+    "@notionhq/client": "^2.3.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "node-cron": "^3.0.3",

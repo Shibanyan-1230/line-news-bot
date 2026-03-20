@@ -16,6 +16,11 @@ export const config = {
   line: {
     channelAccessToken: () => requireEnv("LINE_CHANNEL_ACCESS_TOKEN"),
     userId: () => requireEnv("LINE_USER_ID"),
+    channelSecret: () => requireEnv("LINE_CHANNEL_SECRET"),
+  },
+  notion: {
+    apiKey: () => requireEnv("NOTION_API_KEY"),
+    databaseId: () => requireEnv("NOTION_DATABASE_ID"),
   },
   cronSchedule: process.env.CRON_SCHEDULE || "0 7 * * *",
 };
