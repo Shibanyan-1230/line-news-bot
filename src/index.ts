@@ -6,6 +6,7 @@ import express from "express";
 import cron from "node-cron";
 import { config } from "./config";
 import { fetchAllNews } from "./services/newsService";
+import { fetchMarketData } from "./services/marketService";
 import { sendLineMessage } from "./services/lineService";
 import { formatNewsMessage } from "./formatter";
 
@@ -17,8 +18,12 @@ async function executeJob(): Promise<void> {
   console.log(`[INFO] ジョブ開始: ${new Date().toISOString()}`);
 
   try {
-    const allNews = await fetchAllNews();
-    const message = formatNewsMessage(allNews);
+    const [allNews, marketData] = await Promise.all([
+      fetchAllNews(),
+      fetchMarketData(),
+    ]);
+
+    const message = formatNewsMessage(allNews, marketData);
 
     console.log("[INFO] 送信メッセージ:");
     console.log(message);
@@ -45,8 +50,6 @@ cron.schedule(schedule, executeJob, {
 
 // --------------------------------------------------
 // HTTPサーバー（Railway/Render用ヘルスチェック）
-// ポートをリッスンしないとプラットフォームがプロセスを
-// 不安定とみなして再起動し、cronが発火しないことがある
 // --------------------------------------------------
 const app = express();
 const PORT = parseInt(process.env.PORT || "3000", 10);
@@ -60,7 +63,6 @@ app.get("/", (_req, res) => {
   });
 });
 
-// 手動トリガー用エンドポイント（ブラウザからアクセスで即実行）
 app.get("/trigger", async (_req, res) => {
   res.json({ message: "ジョブを実行中..." });
   await executeJob();

@@ -15,4 +15,4 @@ services:
       - key: LINE_USER_ID
         sync: false
       - key: CRON_SCHEDULE
-        value: "0 8 * * *"
+        value: "0 7 * * *"

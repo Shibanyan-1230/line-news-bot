@@ -3,6 +3,7 @@
 // ============================================
 
 import { fetchAllNews } from "./services/newsService";
+import { fetchMarketData } from "./services/marketService";
 import { sendLineMessage } from "./services/lineService";
 import { formatNewsMessage } from "./formatter";
 
@@ -11,11 +12,14 @@ async function main(): Promise<void> {
   console.log(`[INFO] 実行開始: ${new Date().toISOString()}`);
 
   try {
-    // 1. ニュース取得
-    const allNews = await fetchAllNews();
+    // 1. ニュース取得 & マーケット指標取得（並行）
+    const [allNews, marketData] = await Promise.all([
+      fetchAllNews(),
+      fetchMarketData(),
+    ]);
 
     // 2. メッセージ整形
-    const message = formatNewsMessage(allNews);
+    const message = formatNewsMessage(allNews, marketData);
     console.log("[INFO] 送信メッセージ:");
     console.log(message);
     console.log("---");
