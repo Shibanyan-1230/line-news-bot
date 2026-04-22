@@ -1,18 +1,26 @@
 # Render.com用設定ファイル
-# Background Worker として常時起動し、内部cronでスケジュール実行
+# Web Service として常時起動し、内部cronでスケジュール実行
+# UptimeRobotなど外部pingで15分アイドルスリープを回避する前提
 services:
-  - type: worker
+  - type: web
     name: line-news-bot
     runtime: node
     plan: free
     buildCommand: npm install && npm run build
     startCommand: node dist/index.js
+    healthCheckPath: /
     envVars:
       - key: TZ
         value: Asia/Tokyo
+      - key: CRON_SCHEDULE
+        value: "0 7 * * *"
       - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: LINE_CHANNEL_SECRET
         sync: false
       - key: LINE_USER_ID
         sync: false
-      - key: CRON_SCHEDULE
-        value: "0 7 * * *"
+      - key: NOTION_API_KEY
+        sync: false
+      - key: NOTION_DATABASE_ID
+        sync: false
